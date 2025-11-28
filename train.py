@@ -1,6 +1,7 @@
 import cv2
 import os
 import numpy as np
+import json
 
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 recognizer = cv2.face.LBPHFaceRecognizer_create()
@@ -20,6 +21,10 @@ for pessoa in os.listdir("faces"):
 
 recognizer.train(faces, np.array(labels))
 recognizer.save("modelo_faces.yml")
+
+with open("labels.json", "w") as f:
+    json.dump(label_map, f)
+
 
 print("Treinamento concluído!")
 print(label_map)

@@ -1,13 +1,14 @@
 import cv2
+import json
 
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 recognizer = cv2.face.LBPHFaceRecognizer_create()
 recognizer.read("modelo_faces.yml")
 
-label_map = {
-    0: "Pessoa1",
-    1: "Pessoa2"
-}
+
+with open("labels.json", "r") as f:
+    label_map = json.load(f)
+
 
 cap = cv2.VideoCapture(0)
 
@@ -28,13 +29,13 @@ while True:
         # =========================
         percent = max(0, 100 - confidence)
 
-        nome = label_map.get(label, "DESCONHECIDO")
+        nome = label_map.get(str(label), "DESCONHECIDO")
 
-        cv2.putText(frame, f"{nome}  ({percent:.1f}%)",
-                    (x, y-10), cv2.FONT_HERSHEY_SIMPLEX,
-                    0.8, (0,255,0),2)
-
-        cv2.rectangle(frame, (x,y),(x+w,y+h),(0,255,0),2)
+        text = f"{nome} ({percent:.1f}%)"
+        cv2.rectangle(frame, (x,y-25), (x+w, y), (0,255,0), -1)  # filled rectangle
+        cv2.putText(frame, text, (x+5, y-5),
+            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,0,0), 2)
+ 
 
     cv2.imshow("Reconhecimento Facial", frame)
     if cv2.waitKey(1) == ord('q'):
